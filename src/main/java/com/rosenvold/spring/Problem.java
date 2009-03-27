@@ -22,23 +22,35 @@
 
 package com.rosenvold.spring;
 
+import java.util.List;
+
 /**
  * @author <a href="mailto:kristian AT zenior no">Kristian Rosenvold</a>
  */
 public class Problem {
-    Reason reason;
+    List<FieldProblem> fieldProblems;
     String beanName;
 
-    public Problem(Reason reason, String beanName) {
-        this.reason = reason;
+    public Problem(List<FieldProblem> fieldProblems, String beanName) {
+        this.fieldProblems = fieldProblems;
         this.beanName = beanName;
     }
 
-    public Reason getReason() {
-        return reason;
+    public List<FieldProblem> getFieldProblems() {
+        return fieldProblems;
     }
 
     public String getBeanName() {
         return beanName;
+    }
+
+    public String describe(){
+        StringBuilder resp = new StringBuilder();
+
+        resp.append(  beanName);
+        for ( FieldProblem fieldProblem : fieldProblems){
+            resp.append( fieldProblem.describe());
+        }
+        return resp.toString();
     }
 }

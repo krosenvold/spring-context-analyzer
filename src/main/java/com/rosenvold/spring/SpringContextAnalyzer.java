@@ -25,6 +25,8 @@ package com.rosenvold.spring;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -55,14 +57,14 @@ public class SpringContextAnalyzer {
 
     public List<Problem> analyzeCurrentSpringContext() {
         List<Problem> problems = new ArrayList<Problem>();
+        List<FieldProblem> problemsForClass;
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             final Object bean = applicationContext.getBean(beanName);
 
-            if (isComponent(bean.getClass())) {
-                if (isSingletonBean(bean.getClass())) {
-                    if (!hasLegalSingletonFields(bean.getClass())) {
-                        problems.add(new Problem(Reason.FieldNotSpringManaged, beanName));
-                    }
+            if (applicationContext.isSingleton( beanName) && !isSpringFrameworkClass( bean.getClass())) {
+                problemsForClass = getFieldProblems( bean.getClass());
+                if (problemsForClass.size() > 0) {
+                    problems.add(new Problem(problemsForClass, beanName));
                 }
             }
 
@@ -71,12 +73,25 @@ public class SpringContextAnalyzer {
     }
 
 
+    private boolean isSpringFrameworkClass( Class clazz){
+        return clazz.getPackage().getName().startsWith("org.springframework");
+    }
     private boolean hasLegalSingletonFields(Class clazz) {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             if (!isLegalForSingletonBean(field)) return false;
         }
         return true;
+    }
+    private List<FieldProblem> getFieldProblems(Class clazz) {
+        List<FieldProblem> fieldProblems = new ArrayList<FieldProblem>();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            if (!isLegalForSingletonBean(field)) {
+                fieldProblems.add( new FieldProblem(field, FieldProblemType.NotVaildForSingleton));
+            }
+        }
+        return fieldProblems;
     }
 
 
@@ -92,7 +107,7 @@ public class SpringContextAnalyzer {
         return Modifier.isFinal(field.getModifiers());
     }
 
-    private boolean hasAutowiredField(Class clazz) {
+    boolean hasAutowiredField(Class clazz) {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             if (isAutowired(field)) return true;
@@ -125,7 +140,7 @@ public class SpringContextAnalyzer {
         return (Scope) annotation;
     }
 
-    private boolean isComponent(Class clazz) {
+     boolean isComponent(Class clazz) {
         final Annotation[] annotations = clazz.getAnnotations();
         return containsAnnotation(annotations, Component.class);
     }
