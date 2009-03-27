@@ -13,7 +13,7 @@ import com.rosenvold.spring.beans.Service1;
 import com.rosenvold.spring.beans.SubBean1;
 
 /**
- * @author <a href="mailto:kristian@zenior.no">Kristian Rosenvold</a>
+ * @author <a href="mailto:kristian AT zenior no">Kristian Rosenvold</a>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
