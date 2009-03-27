@@ -1,0 +1,7 @@
+package com.rosenvold.spring;
+
+/**
+ * @author <a href="mailto:kristian@zenior.no">Kristian Rosenvold</a>
+ */
+public class FieldProblem {
+}
