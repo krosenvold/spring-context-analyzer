@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 
@@ -22,10 +23,11 @@ import com.rosenvold.spring.beans.SubBean1;
 
 public class SpringContextAnalyzerTest {
     @Autowired
-    SpringContextAnalyzer springContextAnalyzer ;
-        
+    ApplicationContext applicationContext;
+
     @Test
     public void testAnalyzeCurrentSpringContext() {
+        SpringContextAnalyzer springContextAnalyzer = new SpringContextAnalyzer(applicationContext);
         final List<Problem> problemList = springContextAnalyzer.analyzeCurrentSpringContext();
         assertEquals(1, problemList.size());
         String description = springContextAnalyzer.describe( problemList);
@@ -34,6 +36,7 @@ public class SpringContextAnalyzerTest {
 
     @Test
     public void checkAnnotation(){
+        SpringContextAnalyzer springContextAnalyzer = new SpringContextAnalyzer(applicationContext);
         assertTrue( springContextAnalyzer.isComponent(Service1.class));
         assertTrue( springContextAnalyzer.hasAutowiredField(SubBean1.class));
         assertFalse( springContextAnalyzer.hasAutowiredField(Service1.class));
@@ -42,6 +45,7 @@ public class SpringContextAnalyzerTest {
 
     @Test
     public void checkNonPresentAnnotation(){
+        SpringContextAnalyzer springContextAnalyzer = new SpringContextAnalyzer(applicationContext);
         assertFalse( springContextAnalyzer.isComponent(FieldProblem.class));
         assertFalse( springContextAnalyzer.hasAutowiredField(FieldProblem.class));
     }

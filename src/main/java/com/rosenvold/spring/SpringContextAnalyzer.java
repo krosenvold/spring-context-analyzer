@@ -40,10 +40,13 @@ import javax.annotation.Resource;
 /**
  * @author <a href="mailto:kristian AT zenior no">Kristian Rosenvold</a>
  */
-@Component
 public class SpringContextAnalyzer {
-    @Autowired
     ApplicationContext applicationContext;
+
+
+    public SpringContextAnalyzer(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     public String describe(List<Problem> problems) {
         if (problems.size() == 0) return null;
@@ -74,7 +77,7 @@ public class SpringContextAnalyzer {
 
 
     private boolean isSpringFrameworkClass( Class clazz){
-        return clazz.getPackage().getName().startsWith("org.springframework");
+        return clazz.getCanonicalName().startsWith("org.springframework");
     }
     private boolean hasLegalSingletonFields(Class clazz) {
         Field[] fields = clazz.getDeclaredFields();

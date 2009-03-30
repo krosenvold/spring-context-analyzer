@@ -4,7 +4,7 @@
     <groupId>com.rosenvold.spring</groupId>
     <artifactId>spring-context-analyzer</artifactId>
     <packaging>jar</packaging>
-    <version>0.1</version>
+    <version>0.2</version>
     <name>spring-context-analyzer</name>
     <url>http://maven.apache.org</url>
     <dependencies>
