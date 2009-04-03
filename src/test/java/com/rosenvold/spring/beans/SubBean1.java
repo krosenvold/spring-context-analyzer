@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.rosenvold.spring.NonSpringManaged;
 
 /**
- * @author <a href="mailto:kristian@zenior.no">Kristian Rosenvold</a>
+ * @author <a href="mailto:kristian@zenior*dot*no">Kristian Rosenvold</a>
  */
 @Component
 public class SubBean1 extends BaseBean<Service1> {

@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -61,8 +62,11 @@ public class SpringContextAnalyzer {
     public List<Problem> analyzeCurrentSpringContext() {
         List<Problem> problems = new ArrayList<Problem>();
         List<FieldProblem> problemsForClass;
+        BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext;
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             final Object bean = applicationContext.getBean(beanName);
+
+            BeanDefinition beanDefinition = beanDefinitionRegistry.getBeanDefinition( beanName);
 
             if (applicationContext.isSingleton( beanName) && !isSpringFrameworkClass( bean.getClass())) {
                 problemsForClass = getFieldProblems( bean.getClass());

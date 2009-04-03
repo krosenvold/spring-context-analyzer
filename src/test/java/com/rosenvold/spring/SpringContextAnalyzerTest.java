@@ -12,6 +12,7 @@ import java.util.List;
 import static junit.framework.Assert.*;
 import com.rosenvold.spring.beans.Service1;
 import com.rosenvold.spring.beans.SubBean1;
+import com.rosenvold.spring.test.MockScopeLoader;
 
 /**
  * Yo
@@ -20,7 +21,7 @@ import com.rosenvold.spring.beans.SubBean1;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "/applicationContext.xml"
-})
+}, loader = MockScopeLoader.class)
 
 public class SpringContextAnalyzerTest {
     @Autowired
