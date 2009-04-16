@@ -60,9 +60,7 @@ public class SpringContextAnalyzerTest {
     @Test
     public void testGetFieldProblems(){
         SpringContextAnalyzer springContextAnalyzer = new SpringContextAnalyzer(applicationContext);
-        BeanDefinition beanDefinition = springContextAnalyzer.getBeanDefinition(clientWithScopeProxyProblem);
-        Object bean = applicationContext.getBean(clientWithScopeProxyProblem);
-        List<FieldProblem> list = springContextAnalyzer.getFieldProblemsForSingletonBean(bean, beanDefinition);
+        List<FieldProblem> list = springContextAnalyzer.getFieldProblemsForSingletonBean(clientWithScopeProxyProblem);
         assertEquals(1, list.size());
         FieldProblem fieldProblem = list.get(0);
         assertEquals(FieldProblemType.RequiresScopeProxy, fieldProblem.fieldProblemType);
@@ -80,5 +78,12 @@ public class SpringContextAnalyzerTest {
 
     }
 
+    @Test
+    public void testProps(){
+        SpringContextAnalyzer springContextAnalyzer = new SpringContextAnalyzer(applicationContext);
+        List<FieldProblem> list = springContextAnalyzer.getFieldProblemsForSingletonBean("props");
+        assertNotNull(list);
+
+    }
         
 }

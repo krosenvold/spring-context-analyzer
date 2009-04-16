@@ -83,7 +83,13 @@ public class SpringContextAnalyzer {
     private boolean isSpringFrameworkClass( Class clazz){
         return clazz.getCanonicalName().startsWith("org.springframework");
     }
-    
+
+    List<FieldProblem> getFieldProblemsForSingletonBean(String beanName) {
+        Object bean = applicationContext.getBean(beanName);
+        BeanDefinition beanDefinition = getBeanDefinition(beanName);
+        return getFieldProblemsForSingletonBean( bean, beanDefinition);
+
+    }
     List<FieldProblem> getFieldProblemsForSingletonBean(Object singletonBean, BeanDefinition beanDefinition) {
         List<FieldProblem> fieldProblems = new ArrayList<FieldProblem>();
         Field[] fields = singletonBean.getClass().getDeclaredFields();
@@ -133,7 +139,12 @@ public class SpringContextAnalyzer {
 
 
     private boolean isInLegalRuntimeState(Object instance, Field field){
-        return isNonSpringManaged(field) || isInitialized( instance, field);
+        return isKnownException(instance, field ) || isNonSpringManaged(field) || isInitialized( instance, field);
+    }
+
+    private boolean isKnownException(Object instance, Field field){
+        if ("java.util.Properties".equals( instance.getClass().getCanonicalName()) && "defaults".equals( field.getName())) return true;
+        return false;
     }
     /*
      * Indicates if the supplied field has been initialized to a value. This will include any postconstruct spring blocks etc and is a quite reliable way of analyzing the result.
