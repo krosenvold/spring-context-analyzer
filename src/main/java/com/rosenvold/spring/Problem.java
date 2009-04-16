@@ -47,10 +47,14 @@ public class Problem {
     public String describe(){
         StringBuilder resp = new StringBuilder();
 
+        resp.append("Bean: ");
         resp.append(  beanName);
+        resp.append("\n");
         for ( FieldProblem fieldProblem : fieldProblems){
             resp.append( fieldProblem.describe());
+            resp.append("\n");
         }
+        resp.append("========\n");
         return resp.toString();
     }
 }

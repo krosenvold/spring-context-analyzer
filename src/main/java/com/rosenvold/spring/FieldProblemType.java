@@ -6,5 +6,5 @@ package com.rosenvold.spring;
 public enum FieldProblemType {
     //NotVaildForSingleton,
     NotInitializedAtRuntime,
-    RequiresProxy
+    RequiresScopeProxy
 }

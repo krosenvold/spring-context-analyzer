@@ -51,8 +51,7 @@ public class SpringContextAnalyzer {
         if (problems.size() == 0) return null;
         StringBuilder resp = new StringBuilder();
         for (Problem problem : problems) {
-            resp.append(problem.getBeanName());
-            resp.append(": Contains member fields not under visible spring management\n");
+            resp.append(problem.describe());
         }
         return resp.toString();
     }
@@ -95,7 +94,7 @@ public class SpringContextAnalyzer {
             }
 
             if(violatesProxyRequirementsForSingletonClient( singletonBean, field)){
-                fieldProblems.add( new FieldProblem(field, FieldProblemType.RequiresProxy));
+                fieldProblems.add( new FieldProblem(field, FieldProblemType.RequiresScopeProxy));
 
             }
             /*else if (!isLegalForSingletonBean(field, beanDefinition)) {

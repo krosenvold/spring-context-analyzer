@@ -24,7 +24,7 @@ public class FieldProblem {
     }
 
     public String describe(){
-        return field.getName() + " : " + fieldProblemType;
+        return "Field \"" + field.getName() + "\"  has problem " + fieldProblemType;
     }
 
 }

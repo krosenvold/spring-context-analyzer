@@ -65,7 +65,7 @@ public class SpringContextAnalyzerTest {
         List<FieldProblem> list = springContextAnalyzer.getFieldProblemsForSingletonBean(bean, beanDefinition);
         assertEquals(1, list.size());
         FieldProblem fieldProblem = list.get(0);
-        assertEquals(FieldProblemType.RequiresProxy, fieldProblem.fieldProblemType);
+        assertEquals(FieldProblemType.RequiresScopeProxy, fieldProblem.fieldProblemType);
 
 
     }
