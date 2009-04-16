@@ -23,11 +23,9 @@ package com.rosenvold.spring;
 
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -62,14 +60,13 @@ public class SpringContextAnalyzer {
     public List<Problem> analyzeCurrentSpringContext() {
         List<Problem> problems = new ArrayList<Problem>();
         List<FieldProblem> problemsForClass;
-        BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext;
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             final Object bean = applicationContext.getBean(beanName);
 
-            BeanDefinition beanDefinition = beanDefinitionRegistry.getBeanDefinition( beanName);
+            BeanDefinition beanDefinition = getBeanDefinition( beanName);
 
             if (applicationContext.isSingleton( beanName) && !isSpringFrameworkClass( bean.getClass())) {
-                problemsForClass = getFieldProblems( bean.getClass());
+                problemsForClass = getFieldProblemsForSingletonBean( bean, beanDefinition);
                 if (problemsForClass.size() > 0) {
                     problems.add(new Problem(problemsForClass, beanName));
                 }
@@ -79,31 +76,81 @@ public class SpringContextAnalyzer {
         return problems;
     }
 
+    BeanDefinition getBeanDefinition(String beanName){
+        BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext;
+        return  beanDefinitionRegistry.getBeanDefinition( beanName);
+    }
 
     private boolean isSpringFrameworkClass( Class clazz){
         return clazz.getCanonicalName().startsWith("org.springframework");
     }
-    private boolean hasLegalSingletonFields(Class clazz) {
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
-            if (!isLegalForSingletonBean(field)) return false;
-        }
-        return true;
-    }
-    private List<FieldProblem> getFieldProblems(Class clazz) {
+    
+    List<FieldProblem> getFieldProblemsForSingletonBean(Object singletonBean, BeanDefinition beanDefinition) {
         List<FieldProblem> fieldProblems = new ArrayList<FieldProblem>();
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = singletonBean.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (!isLegalForSingletonBean(field)) {
-                fieldProblems.add( new FieldProblem(field, FieldProblemType.NotVaildForSingleton));
+            Class clazz = field.getDeclaringClass();
+            if (!isInLegalRuntimeState(singletonBean , field)) {  // This is the best analysis. Simply checks that all declared fields have object values when spring is done.
+                fieldProblems.add( new FieldProblem(field, FieldProblemType.NotInitializedAtRuntime));
             }
+
+            if(violatesProxyRequirementsForSingletonClient( singletonBean, field)){
+                fieldProblems.add( new FieldProblem(field, FieldProblemType.RequiresProxy));
+
+            }
+            /*else if (!isLegalForSingletonBean(field, beanDefinition)) {
+                fieldProblems.add( new FieldProblem(field, FieldProblemType.NotVaildForSingleton));
+            } */
         }
         return fieldProblems;
     }
 
+    /**
+     * Checks if the value in a given field can be accessed from a singleton bean without a proxy.
+     * @param singletonBean The client bean
+     * @param field The field to check
+     * @return true if the requirements are verified not to be met, false in all other cases
+     */
+    boolean violatesProxyRequirementsForSingletonClient(Object singletonBean, Field field) {
+        Object injectedBean = getFieldValue( singletonBean, field);
+        if (injectedBean == null) return false; // Dont care
+        String[] beanNamesForType = applicationContext.getBeanNamesForType(injectedBean.getClass());
+        if (beanNamesForType.length != 1 ) return false;
+        BeanDefinition injectedBeanDef = getBeanDefinition( beanNamesForType[0]);
+        return (isWebScope(injectedBeanDef.getScope()) && !isProxy( injectedBean));
+    }
 
-    private boolean isLegalForSingletonBean(Field field) {
+    private boolean isWebScope(String scope){
+        return "request".equals( scope) || "session".equals(scope);
+    }
+    private boolean isProxy(Object value){
+         return java.lang.reflect.Proxy.isProxyClass(value.getClass());
+    }
+
+
+    private boolean isLegalForSingletonBean(Field field, BeanDefinition beanDefinition) {
         return isNonSpringManaged(field) || isAutowired(field) || isResource(field) || isStatic(field) || isFinal(field);
+    }
+
+
+    private boolean isInLegalRuntimeState(Object instance, Field field){
+        return isNonSpringManaged(field) || isInitialized( instance, field);
+    }
+    /*
+     * Indicates if the supplied field has been initialized to a value. This will include any postconstruct spring blocks etc and is a quite reliable way of analyzing the result.
+     */
+    private boolean isInitialized(Object instance, Field field) {
+        return getFieldValue(instance, field)!= null;
+    }
+
+    private Object getFieldValue(Object instance, Field field) {
+        if (!field.isAccessible())
+            field.setAccessible(true);
+        try {
+            return  field.get(instance);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean isStatic(Field field) {
@@ -122,30 +169,6 @@ public class SpringContextAnalyzer {
         return false;
     }
 
-
-    private boolean isSingletonBean(Class clazz) {
-        return !isWebScoped(clazz); // Oooh. This one is a bit quick.
-    }
-
-    private boolean isWebScoped(Class clazz) {
-        return isRequestScoped(clazz) || isSessionScoped(clazz);
-    }
-
-    private boolean isRequestScoped(Class clazz) {
-        Scope scope = getScope(clazz);
-        return scope != null && "request".equals(scope.value());
-    }
-
-    private boolean isSessionScoped(Class clazz) {
-        Scope scope = getScope(clazz);
-        return scope != null && "session".equals(scope.value());
-    }
-
-    private Scope getScope(Class clazz) {
-        @SuppressWarnings({"unchecked"}) final Annotation annotation = clazz.getAnnotation(Scope.class);
-        if (annotation == null) return null;
-        return (Scope) annotation;
-    }
 
      boolean isComponent(Class clazz) {
         final Annotation[] annotations = clazz.getAnnotations();

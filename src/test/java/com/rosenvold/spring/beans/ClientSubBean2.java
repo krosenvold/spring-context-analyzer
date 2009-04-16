@@ -4,12 +4,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * A bean that verifies that spring bypasses erasure for base classes.
  * @author <a href="mailto:kristian AT zenior no">Kristian Rosenvold</a>
  */
 @Component
-public class SubBean2 extends BaseBean<Service2> {
+public class ClientSubBean2 extends BaseBean<ServiceSingleton2> {
     @Autowired
-    SubBean1 subBean1;
+    ClientSubBean1 clientSubBean1;
 
     String problem;
 }

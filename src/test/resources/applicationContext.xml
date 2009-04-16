@@ -9,8 +9,8 @@
 
      <context:component-scan base-package="com.rosenvold.spring"/>
 
-    <bean name="sessionScopedWithProxy" class="com.rosenvold.spring.beans.SessionScopedXmlWired" scope="session">
+    <bean name="sessionScopedWithProxy" class="com.rosenvold.spring.beans.ServiceSessionScopedXmlWired" scope="session">
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
-    <bean name="sessionScopedWithoutProxy" class="com.rosenvold.spring.beans.SessionScopedXmlWired" scope="session"/>
+    <bean name="sessionScopedWithoutProxy" class="com.rosenvold.spring.beans.ServiceSessionScopedXmlWired" scope="session"/>
 </beans>
