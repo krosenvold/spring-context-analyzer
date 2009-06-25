@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="0" time="0.313" errors="0" skipped="0" tests="6" name="com.rosenvold.spring.SpringContextAnalyzerTest">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="d:\jdk1.6.0_12\jre\bin"/>
+    <property name="java.vm.version" value="11.2-b01"/>
+    <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
+    <property name="java.vendor.url" value="http://java.sun.com/"/>
+    <property name="path.separator" value=";"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) Client VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="NO"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="Service Pack 3"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="c:\spring-context-analyzer"/>
+    <property name="java.runtime.version" value="1.6.0_12-b04"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="basedir" value="c:\spring-context-analyzer"/>
+    <property name="java.endorsed.dirs" value="d:\jdk1.6.0_12\jre\lib\endorsed"/>
+    <property name="os.arch" value="x86"/>
+    <property name="surefire.real.class.path" value="c:\DOCUME~1\t535255\LOCALS~1\Temp\surefirebooter6596652077709900563.jar"/>
+    <property name="java.io.tmpdir" value="c:\DOCUME~1\t535255\LOCALS~1\Temp\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows XP"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="d:\jdk1.6.0_12\jre\bin;.;C:\WINNT\Sun\Java\bin;C:\WINNT\system32;C:\WINNT;C:\cygwin\usr\local\bin;C:\cygwin\bin;C:\cygwin\bin;C:\cygwin\usr\X11R6\bin;c:\WINNT\system32;c:\WINNT;c:\WINNT\System32\Wbem;c:\Norman\Npm\Bin;d:\jdk1.6.0_12\bin;C:\cygwin\bin;c:\Program Files\Subversion154;c:\java\apache-ant-1.7.1\bin;c:\java\Groovy-1.5.7\bin;c:\java\apache-maven-2.1.0\bin"/>
+    <property name="surefire.test.class.path" value="c:\spring-context-analyzer\target\test-classes;c:\spring-context-analyzer\target\classes;d:\repo\junit\junit\4.4\junit-4.4.jar;d:\repo\org\springframework\spring-test\2.5.6\spring-test-2.5.6.jar;d:\repo\org\springframework\spring-web\2.5.6\spring-web-2.5.6.jar;d:\repo\org\springframework\spring-beans\2.5.6\spring-beans-2.5.6.jar;d:\repo\org\springframework\spring-core\2.5.6\spring-core-2.5.6.jar;d:\repo\org\springframework\spring-context\2.5.6\spring-context-2.5.6.jar;d:\repo\aopalliance\aopalliance\1.0\aopalliance-1.0.jar;d:\repo\org\mortbay\jetty\servlet-api-2.5\6.1.14\servlet-api-2.5-6.1.14.jar;d:\repo\org\springframework\spring-aop\2.5.6\spring-aop-2.5.6.jar;d:\repo\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="50.0"/>
+    <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
+    <property name="os.version" value="5.1"/>
+    <property name="user.home" value="C:\Documents and Settings\t535255"/>
+    <property name="user.timezone" value="Europe/Berlin"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="java.specification.version" value="1.6"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="user.name" value="t535255"/>
+    <property name="java.class.path" value="c:\spring-context-analyzer\target\test-classes;c:\spring-context-analyzer\target\classes;d:\repo\junit\junit\4.4\junit-4.4.jar;d:\repo\org\springframework\spring-test\2.5.6\spring-test-2.5.6.jar;d:\repo\org\springframework\spring-web\2.5.6\spring-web-2.5.6.jar;d:\repo\org\springframework\spring-beans\2.5.6\spring-beans-2.5.6.jar;d:\repo\org\springframework\spring-core\2.5.6\spring-core-2.5.6.jar;d:\repo\org\springframework\spring-context\2.5.6\spring-context-2.5.6.jar;d:\repo\aopalliance\aopalliance\1.0\aopalliance-1.0.jar;d:\repo\org\mortbay\jetty\servlet-api-2.5\6.1.14\servlet-api-2.5-6.1.14.jar;d:\repo\org\springframework\spring-aop\2.5.6\spring-aop-2.5.6.jar;d:\repo\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;"/>
+    <property name="java.vm.specification.version" value="1.0"/>
+    <property name="sun.arch.data.model" value="32"/>
+    <property name="java.home" value="d:\jdk1.6.0_12\jre"/>
+    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.language" value="no"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.version" value="1.6.0_12"/>
+    <property name="java.ext.dirs" value="d:\jdk1.6.0_12\jre\lib\ext;C:\WINNT\Sun\Java\lib\ext"/>
+    <property name="sun.boot.class.path" value="d:\jdk1.6.0_12\jre\lib\resources.jar;d:\jdk1.6.0_12\jre\lib\rt.jar;d:\jdk1.6.0_12\jre\lib\sunrsasign.jar;d:\jdk1.6.0_12\jre\lib\jsse.jar;d:\jdk1.6.0_12\jre\lib\jce.jar;d:\jdk1.6.0_12\jre\lib\charsets.jar;d:\jdk1.6.0_12\jre\classes"/>
+    <property name="java.vendor" value="Sun Microsystems Inc."/>
+    <property name="localRepository" value="d:/repo"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
+  </properties>
+  <testcase time="0.016" classname="com.rosenvold.spring.SpringContextAnalyzerTest" name="testAnalyzeCurrentSpringContext"/>
+  <testcase time="0" classname="com.rosenvold.spring.SpringContextAnalyzerTest" name="checkAnnotation"/>
+  <testcase time="0" classname="com.rosenvold.spring.SpringContextAnalyzerTest" name="checkNonPresentAnnotation"/>
+  <testcase time="0" classname="com.rosenvold.spring.SpringContextAnalyzerTest" name="testGetFieldProblems"/>
+  <testcase time="0" classname="com.rosenvold.spring.SpringContextAnalyzerTest" name="testProxySitutation"/>
+  <testcase time="0" classname="com.rosenvold.spring.SpringContextAnalyzerTest" name="testProps"/>
+</testsuite>
