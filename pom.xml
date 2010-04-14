@@ -4,14 +4,14 @@
     <groupId>com.rosenvold.spring</groupId>
     <artifactId>spring-context-analyzer</artifactId>
     <packaging>jar</packaging>
-    <version>0.4</version>
+    <version>0.5-SNAPSHOT</version>
     <name>spring-context-analyzer</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.4</version>
+            <version>4.8.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -90,7 +90,7 @@
     </build>
 
     <properties>
-		<springframework.version>2.5.6</springframework.version>
+		<springframework.version>3.0.0.RELEASE</springframework.version>
     </properties>
 
 </project>
