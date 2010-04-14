@@ -18,24 +18,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.rosenvold.spring;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+
 import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.lang.reflect.Modifier;
+import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.ArrayList;
+
+import javax.annotation.Resource;
 
 /**
  * @author <a href="mailto:kristian AT zenior no">Kristian Rosenvold</a>
  */
 public class SpringContextAnalyzer {
-    private final ApplicationContext applicationContext;
+    ApplicationContext applicationContext;
 
 
     public SpringContextAnalyzer(ApplicationContext applicationContext) {
@@ -43,9 +48,7 @@ public class SpringContextAnalyzer {
     }
 
     public String describe(List<Problem> problems) {
-        if (problems.isEmpty()) {
-            return null;
-        }
+        if (problems.size() == 0) return null;
         StringBuilder resp = new StringBuilder();
         for (Problem problem : problems) {
             resp.append(problem.describe());
@@ -53,28 +56,23 @@ public class SpringContextAnalyzer {
         return resp.toString();
     }
 
-    public List<Problem> analyzeCurrentSpringContext(Filter<List<FieldProblem>> filter) {
+    public List<Problem> analyzeCurrentSpringContext() {
         List<Problem> problems = new ArrayList<Problem>();
+        List<FieldProblem> problemsForClass;
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             final Object bean = applicationContext.getBean(beanName);
 
+            BeanDefinition beanDefinition = getBeanDefinition( beanName);
+
             if (applicationContext.isSingleton( beanName) && !isSpringFrameworkClass( bean.getClass())) {
-                final List<FieldProblem> problemsForClass = getFieldProblemsForSingletonBean( bean);
-                if (!problemsForClass.isEmpty() && filter.accept(problemsForClass)) {
+                problemsForClass = getFieldProblemsForSingletonBean( bean, beanDefinition);
+                if (problemsForClass.size() > 0) {
                     problems.add(new Problem(problemsForClass, beanName));
                 }
             }
 
         }
         return problems;
-    }
-
-    public List<Problem> analyzeCurrentSpringContext() {
-        return analyzeCurrentSpringContext(new Filter<List<FieldProblem>>() {
-            public boolean accept(List<FieldProblem> candidate) {
-                return true;
-            }
-        });
     }
 
     BeanDefinition getBeanDefinition(String beanName){
@@ -88,13 +86,15 @@ public class SpringContextAnalyzer {
 
     List<FieldProblem> getFieldProblemsForSingletonBean(String beanName) {
         Object bean = applicationContext.getBean(beanName);
-        return getFieldProblemsForSingletonBean( bean);
-    }
+        BeanDefinition beanDefinition = getBeanDefinition(beanName);
+        return getFieldProblemsForSingletonBean( bean, beanDefinition);
 
-    List<FieldProblem> getFieldProblemsForSingletonBean(Object singletonBean) {
+    }
+    List<FieldProblem> getFieldProblemsForSingletonBean(Object singletonBean, BeanDefinition beanDefinition) {
         List<FieldProblem> fieldProblems = new ArrayList<FieldProblem>();
         Field[] fields = singletonBean.getClass().getDeclaredFields();
         for (Field field : fields) {
+            Class clazz = field.getDeclaringClass();
             if (!isInLegalRuntimeState(singletonBean , field)) {  // This is the best analysis. Simply checks that all declared fields have object values when spring is done.
                 fieldProblems.add( new FieldProblem(field, FieldProblemType.NotInitializedAtRuntime));
             }
@@ -103,6 +103,9 @@ public class SpringContextAnalyzer {
                 fieldProblems.add( new FieldProblem(field, FieldProblemType.RequiresScopeProxy));
 
             }
+            /*else if (!isLegalForSingletonBean(field, beanDefinition)) {
+                fieldProblems.add( new FieldProblem(field, FieldProblemType.NotVaildForSingleton));
+            } */
         }
         return fieldProblems;
     }
@@ -130,14 +133,19 @@ public class SpringContextAnalyzer {
     }
 
 
+    private boolean isLegalForSingletonBean(Field field, BeanDefinition beanDefinition) {
+        return isNonSpringManaged(field) || isAutowired(field) || isResource(field) || isStatic(field) || isFinal(field);
+    }
+
+
     private boolean isInLegalRuntimeState(Object instance, Field field){
         return isKnownException(instance, field ) || isNonSpringManaged(field) || isInitialized( instance, field);
     }
 
     private boolean isKnownException(Object instance, Field field){
-        return "java.util.Properties".equals(instance.getClass().getCanonicalName()) && "defaults".equals(field.getName());
+        if ("java.util.Properties".equals( instance.getClass().getCanonicalName()) && "defaults".equals( field.getName())) return true;
+        return false;
     }
-
     /*
      * Indicates if the supplied field has been initialized to a value. This will include any postconstruct spring blocks etc and is a quite reliable way of analyzing the result.
      */
@@ -155,6 +163,14 @@ public class SpringContextAnalyzer {
         }
     }
 
+    private boolean isStatic(Field field) {
+        return Modifier.isStatic(field.getModifiers());
+    }
+
+    private boolean isFinal(Field field) {
+        return Modifier.isFinal(field.getModifiers());
+    }
+
     boolean hasAutowiredField(Class clazz) {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
@@ -163,7 +179,8 @@ public class SpringContextAnalyzer {
         return false;
     }
 
-    boolean isComponent(Class clazz) {
+
+     boolean isComponent(Class clazz) {
         final Annotation[] annotations = clazz.getAnnotations();
         return containsAnnotation(annotations, Component.class);
     }
@@ -174,6 +191,10 @@ public class SpringContextAnalyzer {
 
     private boolean isAutowired(Field field) {
         return containsAnnotation(field.getDeclaredAnnotations(), Autowired.class);
+    }
+
+    private boolean isResource(Field field) {
+        return containsAnnotation(field.getDeclaredAnnotations(), Resource.class);
     }
 
     private boolean containsAnnotation(Annotation[] annotations, Class<? extends Annotation> requestedType) {
