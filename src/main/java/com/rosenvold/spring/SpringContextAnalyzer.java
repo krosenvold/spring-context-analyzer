@@ -31,6 +31,8 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -40,7 +42,7 @@ import javax.annotation.Resource;
  * @author <a href="mailto:kristian AT zenior no">Kristian Rosenvold</a>
  */
 public class SpringContextAnalyzer {
-    ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
 
     public SpringContextAnalyzer(ApplicationContext applicationContext) {
@@ -56,23 +58,30 @@ public class SpringContextAnalyzer {
         return resp.toString();
     }
 
-    public List<Problem> analyzeCurrentSpringContext() {
+    public List<Problem> analyzeCurrentSpringContext(Filter<List<FieldProblem>> filter) {
         List<Problem> problems = new ArrayList<Problem>();
-        List<FieldProblem> problemsForClass;
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             final Object bean = applicationContext.getBean(beanName);
 
             BeanDefinition beanDefinition = getBeanDefinition( beanName);
 
             if (applicationContext.isSingleton( beanName) && !isSpringFrameworkClass( bean.getClass())) {
-                problemsForClass = getFieldProblemsForSingletonBean( bean, beanDefinition);
-                if (problemsForClass.size() > 0) {
+                final List<FieldProblem> problemsForClass = getFieldProblemsForSingletonBean( bean, beanDefinition);
+                if (!problemsForClass.isEmpty() && filter.accept(problemsForClass)) {
                     problems.add(new Problem(problemsForClass, beanName));
                 }
             }
 
         }
         return problems;
+    }
+
+    public List<Problem> analyzeCurrentSpringContext() {
+        return analyzeCurrentSpringContext(new Filter<List<FieldProblem>>() {
+            public boolean accept(List<FieldProblem> candidate) {
+                return true;
+            }
+        });
     }
 
     BeanDefinition getBeanDefinition(String beanName){

@@ -1,20 +1,19 @@
 package com.rosenvold.spring;
 
+import com.rosenvold.spring.beans.ClientSubBean1;
+import com.rosenvold.spring.beans.ScopedServiceInterface;
+import com.rosenvold.spring.beans.ServiceSingleton1;
+import com.rosenvold.spring.test.MockScopeLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
 import static junit.framework.Assert.*;
-import com.rosenvold.spring.beans.ServiceSingleton1;
-import com.rosenvold.spring.beans.ClientSubBean1;
-import com.rosenvold.spring.beans.ScopedServiceInterface;
-import com.rosenvold.spring.test.MockScopeLoader;
 
 /**
  * Yo
