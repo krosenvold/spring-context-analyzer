@@ -4,7 +4,7 @@
     <groupId>com.rosenvold.spring</groupId>
     <artifactId>spring-context-analyzer</artifactId>
     <packaging>jar</packaging>
-    <version>0.4</version>
+    <version>0.5-SNAPSHOT</version>
     <name>spring-context-analyzer</name>
     <url>http://maven.apache.org</url>
     <dependencies>
@@ -88,6 +88,14 @@
         </plugins>
 
     </build>
+
+    <scm>
+        <connection>scm:git:git://github.com/krosenvold/spring-context-analyzer.git</connection>
+       
+     
+<developerConnection>scm:git:ssh://git@github.com/krosenvold/spring-context-analyzer.git</developerConnection>
+        <url>http://github.com/krosenvold/bgit</url>
+    </scm>
 
     <properties>
 		<springframework.version>2.5.6</springframework.version>
